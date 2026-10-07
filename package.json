@@ -1,0 +1,12 @@
+{
+  "name": "basecamps-ressenyes-protegit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --env-file=.env scripts/build.mjs",
+    "test": "node --env-file=.env --test scripts/security.test.mjs",
+    "verify": "node scripts/verify-public.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
