@@ -13,7 +13,7 @@ async function collect(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) await collect(path);
-    else if (entry.isFile() && /\.(html|css)$/.test(entry.name)) {
+    else if (entry.isFile() && /\.(html|css|json|md|txt)$/i.test(entry.name)) {
       const name = relative(input, path).replaceAll('\\', '/');
       files[name] = await readFile(path, 'utf8');
     }
@@ -21,6 +21,7 @@ async function collect(directory) {
 }
 await collect(input);
 if (!files['index.html'] || !files['evidencies/index.html']) throw new Error('Falta el visor o l’índex d’evidències.');
+if (!files['dashboard/index.html']) throw new Error('Falta el dashboard privat verificat.');
 const salt = randomBytes(32);
 const iv = randomBytes(12);
 const iterations = 600_000;
@@ -31,6 +32,8 @@ const encrypted = await webcrypto.subtle.encrypt({ name: 'AES-GCM', iv, addition
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 for (const name of ['index.html', 'gate.js', 'sw.js']) await copyFile(join(root, 'web', name), join(output, name));
+await mkdir(join(output, 'dashboard'), { recursive: true });
+await copyFile(join(root, 'web/dashboard/index.html'), join(output, 'dashboard/index.html'));
 await writeFile(join(output, 'payload.bin'), Buffer.from(encrypted));
 await writeFile(join(output, 'crypto.json'), JSON.stringify({ version: 1, algorithm: 'AES-GCM', kdf: 'PBKDF2-SHA256', iterations, salt: salt.toString('base64'), iv: iv.toString('base64') }) + '\n');
 await writeFile(join(output, '.nojekyll'), '');

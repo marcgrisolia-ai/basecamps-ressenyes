@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ca">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Basecamps · Dashboard de ressenyes</title>
+<style>body{font:16px/1.6 system-ui;background:#f3f5f1;color:#203c30;max-width:680px;margin:12vh auto;padding:24px}a{color:#18745a}</style>
+<body><p>Obrint el dashboard protegit de Basecamps…</p><a id="access" href="../">Accedeix al dashboard</a>
+<script>
+const root = new URL('../', location.href);
+const dashboard = new URL('__private/dashboard/index.html', root);
+dashboard.search = location.search;
+dashboard.hash = location.hash;
+root.searchParams.set('next', dashboard.pathname + dashboard.search + dashboard.hash);
+document.getElementById('access').href = root.href;
+location.replace(root.href);
+</script>
+</body></html>

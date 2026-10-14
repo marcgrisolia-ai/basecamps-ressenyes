@@ -6,6 +6,13 @@ let files;
 let loading;
 let generation = 0;
 const fromBase64 = value => Uint8Array.from(atob(value), c => c.charCodeAt(0));
+const contentType = path => ({
+  html: 'text/html; charset=utf-8',
+  css: 'text/css; charset=utf-8',
+  json: 'application/json; charset=utf-8',
+  md: 'text/plain; charset=utf-8',
+  txt: 'text/plain; charset=utf-8',
+})[path.split('.').at(-1).toLowerCase()] || 'application/octet-stream';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
@@ -111,6 +118,6 @@ self.addEventListener('fetch', event => {
     if (!path || path.endsWith('/')) path += 'index.html';
     if (event.request.method !== 'GET' && event.request.method !== 'HEAD') return new Response('Mètode no permès', { status: 405 });
     if (!Object.hasOwn(available, path)) return new Response('No s’ha trobat', { status: 404 });
-    return new Response(event.request.method === 'HEAD' ? null : available[path], { headers: { 'Content-Type': path.endsWith('.css') ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8', 'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
+    return new Response(event.request.method === 'HEAD' ? null : available[path], { headers: { 'Content-Type': contentType(path), 'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
   })());
 });
